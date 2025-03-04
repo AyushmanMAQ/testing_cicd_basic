@@ -16,3 +16,5 @@ if response.status_code == 200:
         print(f"   URL: {article['url']}\n")
 else:
     print(f"Error fetching news: {response.status_code}")
+
+#Hello Madan

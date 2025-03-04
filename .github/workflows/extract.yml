@@ -16,8 +16,16 @@ jobs:
       - name: Get Changes in test.py
         run: |
           git fetch origin main  # Ensure we have the latest changes
-          git diff HEAD^ HEAD -- test.py > edited_changes.txt  # Get changes in test.py
-          cat edited_changes.txt  # Print the changes
+          
+          # Check if there is at least one previous commit
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            git diff HEAD^ HEAD -- test.py > edited_changes.txt  # Get changes in test.py
+          else
+            echo "First commit or no previous commit found. Storing full test.py content."
+            cat test.py > edited_changes.txt  # Store full content if no previous commit
+          fi
+
+          cat edited_changes.txt  # Print the extracted changes
 
       - name: Commit and Push Changes
         run: |

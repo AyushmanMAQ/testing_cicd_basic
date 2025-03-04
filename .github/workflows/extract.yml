@@ -1,0 +1,32 @@
+name: Extract Edits from test.py
+
+on:
+  push:
+    paths:
+      - 'test.py'  # Triggers when test.py is modified
+
+jobs:
+  extract-edits:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Get Changes in test.py
+        run: |
+          git fetch origin main  # Ensure we have the latest changes
+          git diff HEAD^ HEAD -- test.py > edited_changes.txt  # Get changes in test.py
+          cat edited_changes.txt  # Print the changes
+
+      - name: Commit and Push Changes
+        run: |
+          if [ -s edited_changes.txt ]; then  # Check if file is not empty
+            mv edited_changes.txt edited_part.txt  # Rename for clarity
+            git config --global user.name "github-actions"
+            git config --global user.email "github-actions@github.com"
+            git add edited_part.txt
+            git commit -m "Added extracted edits from test.py"
+            git push
+          else
+            echo "No changes detected in test.py"
